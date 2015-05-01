@@ -70,7 +70,7 @@ def spider(tovisit):
 
 	pool.join()
 
-	return got,filter(None,real_result)
+	return filter(None,real_result),got
 
 
 if __name__ == '__main__':
@@ -81,15 +81,20 @@ if __name__ == '__main__':
 	dataout={}
 
 	while depth<maxdepth:
-		premaster=[]
+		premaster=[] 
+		premasterall=[]
 		for idx,item in enumerate(masterscrape):
 			print "depth: "+str(depth)+" Index: "+str(idx)+" of: "+str(len(masterscrape))
 			goodlinks, allinks=spider(item)
 			dataout[item]=[depth,goodlinks,allinks]
 			premaster+=goodlinks
-			masterall+=allinks
-		print len(premaster)
-		print len(masterall)
-		masterscrape=[aa for aa in list(set(premaster)) if aa not in masterall]
+			premasterall+=allinks
+
+		print "============="
+		print "ADDING: "+str(len(premaster))
+		print "============="
+
+		masterscrape=[aa for aa in list(set(premaster)) if aa not in masterscrape]
+		masterall+=premasterall
 		masterall=list(set(masterall))
 		depth+=1
