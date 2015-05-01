@@ -1,10 +1,11 @@
 import socks
 import socket
 import time
+import pprint
 
 start=['http://torvps7kzis5ujfz.onion/~user/']
 
-maxdepth=2
+maxdepth=4
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; rv:31.0) Gecko/20100101 Firefox/31.0'
@@ -12,6 +13,9 @@ headers = {
 
 TORSERVER='127.0.0.1'
 TORPORT=9050
+
+TIMEOUT=(15.05, 60)
+
 
 socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5,TORSERVER, TORPORT)
 socket.socket = socks.socksocket
@@ -26,6 +30,9 @@ from urlparse import urlparse
 import multiprocessing
 from lxml import html
 import requests
+
+#yolo
+requests.packages.urllib3.disable_warnings()
 
 
 def getter(url):
@@ -44,14 +51,12 @@ def getter(url):
 
 def feeler(url):
 	try:
-		header=requests.head(url,headers=headers).headers['Content-Type']
+		header=requests.head(url,headers=headers,timeout=TIMEOUT).headers['Content-Type']
 	except Exception:
 		return ""
 	if '.onion' in urlparse(url)[1] and 'text/html' in header:
 		return url
 	else:
-		print "bad"
-		print header
 		return ""
 
 def spider(tovisit):
@@ -98,3 +103,9 @@ if __name__ == '__main__':
 		masterall+=premasterall
 		masterall=list(set(masterall))
 		depth+=1
+		with open("log.txt","w") as fout:
+			pprint.pprint(dataout, fout)
+			fout.close()
+
+print "+++++++++++"
+print "all done! total: "+str(len(masterall))
